@@ -1,9 +1,9 @@
-package me.shib.java.lib.rest.client;
+package me.shib.java.lib.microrest;
 
 import me.shib.java.lib.common.utils.JsonLib;
-import me.shib.java.lib.rest.client.requests.GET;
-import me.shib.java.lib.rest.client.requests.POST;
-import me.shib.java.lib.rest.client.requests.Request;
+import me.shib.java.lib.microrest.requests.GET;
+import me.shib.java.lib.microrest.requests.POST;
+import me.shib.java.lib.microrest.requests.Request;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;

@@ -1,4 +1,4 @@
-package me.shib.java.lib.rest.client;
+package me.shib.java.lib.microrest;
 
 import me.shib.java.lib.common.utils.JsonLib;
 
