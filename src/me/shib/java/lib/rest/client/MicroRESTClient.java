@@ -1,0 +1,59 @@
+package me.shib.java.lib.rest.client;
+
+import me.shib.java.lib.common.utils.JsonLib;
+import me.shib.java.lib.rest.client.requests.Request;
+
+import java.io.IOException;
+
+/**
+ * Create an instance for this to make a REST client
+ */
+public final class MicroRESTClient {
+
+    private String endPoint;
+    private JsonLib jsonLib;
+
+    /**
+     * Initializes a MicroRESTClient with a given endpoint URI
+     *
+     * @param endPoint The base URI of the service where the API is hosted
+     */
+    public MicroRESTClient(String endPoint) {
+        this.endPoint = endPoint;
+        this.jsonLib = new JsonLib();
+    }
+
+    /**
+     * Makes a synchronous call to the service with the provided Request and its type
+     *
+     * @param request A request object. Currently there are two types supported - GET and POST
+     * @return The Response object which gives necessary information on what happened
+     * @throws IOException
+     */
+    public Response call(Request request) throws IOException {
+        request.setEndpoint(endPoint);
+        return new HTTPRequestThread(request, null, jsonLib).call();
+    }
+
+    /**
+     * Makes an asynchronous call and invokes one of the callback methods based on the response
+     *
+     * @param request  A request object. Currently there are two types supported - GET and POST
+     * @param callback The callback object that needs to be used after completing the asynchronous thread
+     */
+    public void asyncCall(Request request, Callback callback) {
+        request.setEndpoint(endPoint);
+        new HTTPRequestThread(request, callback, jsonLib).run();
+    }
+
+    /**
+     * A simple callback interface with methods that invoke on Response and Exception
+     */
+    public interface Callback {
+        public void onResponse(Response response);
+
+        public void onException(IOException e);
+    }
+
+
+}

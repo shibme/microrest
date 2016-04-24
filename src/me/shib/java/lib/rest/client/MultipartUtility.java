@@ -5,7 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
-public final class MultipartUtility {
+final class MultipartUtility {
 
     private static final String LINE_FEED = "\r\n";
     private static final String userAgent = "Mozilla/5.0";
@@ -16,23 +16,26 @@ public final class MultipartUtility {
     private OutputStream outputStream;
     private PrintWriter writer;
 
-    protected MultipartUtility(String requestURL, String charset, String boundary) throws IOException {
+    MultipartUtility(String requestURL, String charset, String boundary) throws IOException {
         this.charset = charset;
         this.boundary = boundary;
 
         URL url = new URL(requestURL);
         httpConn = (HttpURLConnection) url.openConnection();
-        httpConn.setDoOutput(true); // indicates POST method
+        httpConn.setDoOutput(true);
         httpConn.setDoInput(true);
-        httpConn.setChunkedStreamingMode(0); // Chunked transfer mode to prevent
-        // local buffering
+        httpConn.setChunkedStreamingMode(0);
         httpConn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
         httpConn.setRequestProperty("User-Agent", userAgent);
         outputStream = httpConn.getOutputStream();
         writer = new PrintWriter(new OutputStreamWriter(outputStream, charset), true);
     }
 
-    public void addFormField(String name, String value) {
+    void setRequestProperty(String key, String value) {
+        httpConn.setRequestProperty(key, value);
+    }
+
+    void addFormField(String name, String value) {
         writer.append("--").append(boundary).append(LINE_FEED)
                 .append("Content-Disposition: form-data; name=\"")
                 .append(name).append("\"").append(LINE_FEED)
@@ -42,13 +45,13 @@ public final class MultipartUtility {
         writer.flush();
     }
 
-    public void addFilePart(String fieldName, File uploadFile) throws IOException {
+    void addFilePart(String fieldName, File uploadFile) throws IOException {
         String fileName = uploadFile.getName();
         FileInputStream inputStream = new FileInputStream(uploadFile);
         addFilePart(fieldName, inputStream, fileName);
     }
 
-    public void addFilePart(String fieldName, InputStream inputStream, String fileName) throws IOException {
+    private void addFilePart(String fieldName, InputStream inputStream, String fileName) throws IOException {
         writer.append("--").append(boundary).append(LINE_FEED)
                 .append("Content-Disposition: form-data; name=\"")
                 .append(fieldName).append("\"; filename=\"")
@@ -70,7 +73,7 @@ public final class MultipartUtility {
         writer.flush();
     }
 
-    public HttpURLConnection execute() throws IOException {
+    HttpURLConnection execute() throws IOException {
         writer.append("--").append(boundary).append("--").append(LINE_FEED);
         writer.close();
         return httpConn;
