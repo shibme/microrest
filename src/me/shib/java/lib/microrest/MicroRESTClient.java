@@ -31,8 +31,7 @@ public final class MicroRESTClient {
      * @throws IOException
      */
     public Response call(Request request) throws IOException {
-        request.setEndpoint(endPoint);
-        return new HTTPRequestThread(request, null, jsonLib).call();
+        return new HTTPRequestThread(endPoint, request, null, jsonLib).call();
     }
 
     /**
@@ -42,8 +41,7 @@ public final class MicroRESTClient {
      * @param callback The callback object that needs to be used after completing the asynchronous thread
      */
     public void asyncCall(Request request, Callback callback) {
-        request.setEndpoint(endPoint);
-        new HTTPRequestThread(request, callback, jsonLib).run();
+        new HTTPRequestThread(endPoint, request, callback, jsonLib).run();
     }
 
     /**

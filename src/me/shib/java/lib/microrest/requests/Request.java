@@ -8,9 +8,8 @@ public abstract class Request {
     private String methodName;
     private RequestType requestType;
     private Map<String, String> requestProperties;
-    private String url;
 
-    protected Request(String methodName, RequestType requestType) {
+    Request(String methodName, RequestType requestType) {
         if (methodName != null) {
             this.methodName = methodName;
         } else {
@@ -20,16 +19,15 @@ public abstract class Request {
         requestProperties = new HashMap<>();
     }
 
-    public void setEndpoint(String endPoint) {
-        if (!methodName.isEmpty()) {
-            this.url = endPoint + "/" + methodName;
-        } else {
-            this.url = endPoint;
+    public String getUrl(String endPoint) {
+        if (endPoint == null) {
+            return null;
         }
-    }
-
-    public String getUrl() {
-        return url;
+        if (!methodName.isEmpty()) {
+            return endPoint + "/" + methodName;
+        } else {
+            return endPoint;
+        }
     }
 
     public String getMethodName() {

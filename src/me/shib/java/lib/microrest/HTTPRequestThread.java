@@ -21,10 +21,12 @@ class HTTPRequestThread extends Thread {
     private static final String charSet = "UTF-8";
     private static final Logger logger = Logger.getLogger(HTTPRequestThread.class.getName());
     private JsonLib jsonLib;
+    private String endPoint;
     private Request request;
     private MicroRESTClient.Callback callback;
 
-    HTTPRequestThread(Request request, MicroRESTClient.Callback callback, JsonLib jsonLib) {
+    HTTPRequestThread(String endPoint, Request request, MicroRESTClient.Callback callback, JsonLib jsonLib) {
+        this.endPoint = endPoint;
         this.request = request;
         this.callback = callback;
         this.jsonLib = jsonLib;
@@ -88,7 +90,7 @@ class HTTPRequestThread extends Thread {
         if (!requestData.isEmpty()) {
             requestUrlBuilder.append("?").append(requestData);
         }
-        URL url = new URL(getRequest.getUrl() + requestUrlBuilder.toString());
+        URL url = new URL(getRequest.getUrl(endPoint) + requestUrlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("User-Agent", userAgent);
@@ -118,7 +120,7 @@ class HTTPRequestThread extends Thread {
     private Response postStandardRequest(POST postRequest) throws IOException {
         Response response = new Response(jsonLib);
         StringBuilder requestUrlBuilder = new StringBuilder();
-        requestUrlBuilder.append(postRequest.getUrl());
+        requestUrlBuilder.append(postRequest.getUrl(endPoint));
         String requestData = getRequestURLWithParameters(postRequest.getStringParameters());
         if (!requestData.isEmpty()) {
             requestUrlBuilder.append("?").append(requestData);
@@ -158,7 +160,7 @@ class HTTPRequestThread extends Thread {
 
     private Response postMultipartRequest(POST postRequest) throws IOException {
         String boundary = "===" + System.currentTimeMillis() + "===";
-        MultipartUtility multipart = new MultipartUtility(postRequest.getUrl(), charSet, boundary);
+        MultipartUtility multipart = new MultipartUtility(postRequest.getUrl(endPoint), charSet, boundary);
         Map<String, String> stringParameters = postRequest.getStringParameters();
         Set<String> stringParameterKeys = stringParameters.keySet();
         Map<String, File> fileParameters = postRequest.getFileParameters();
