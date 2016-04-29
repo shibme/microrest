@@ -8,17 +8,17 @@ import java.io.IOException;
 /**
  * Create an instance for this to make a REST client
  */
-public final class MicroRESTClient {
+public final class RESTinyClient {
 
     private String endPoint;
     private JsonLib jsonLib;
 
     /**
-     * Initializes a MicroRESTClient with a given endpoint URI
+     * Initializes a RESTinyClient with a given endpoint URI
      *
      * @param endPoint The base URI of the service where the API is hosted
      */
-    public MicroRESTClient(String endPoint) {
+    public RESTinyClient(String endPoint) {
         this.endPoint = endPoint;
         this.jsonLib = new JsonLib();
     }

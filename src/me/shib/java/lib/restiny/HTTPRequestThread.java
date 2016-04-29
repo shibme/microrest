@@ -23,9 +23,9 @@ class HTTPRequestThread extends Thread {
     private JsonLib jsonLib;
     private String endPoint;
     private Request request;
-    private MicroRESTClient.Callback callback;
+    private RESTinyClient.Callback callback;
 
-    HTTPRequestThread(String endPoint, Request request, MicroRESTClient.Callback callback, JsonLib jsonLib) {
+    HTTPRequestThread(String endPoint, Request request, RESTinyClient.Callback callback, JsonLib jsonLib) {
         this.endPoint = endPoint;
         this.request = request;
         this.callback = callback;
