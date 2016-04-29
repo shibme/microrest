@@ -1,4 +1,4 @@
-package me.shib.java.lib.microrest;
+package me.shib.java.lib.restiny;
 
 import me.shib.java.lib.common.utils.JsonLib;
 

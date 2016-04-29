@@ -1,4 +1,4 @@
-package me.shib.java.lib.microrest.requests;
+package me.shib.java.lib.restiny.requests;
 
 import java.util.HashMap;
 import java.util.Map;

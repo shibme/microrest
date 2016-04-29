@@ -1,9 +1,9 @@
-package me.shib.java.lib.microrest;
+package me.shib.java.lib.restiny;
 
 import me.shib.java.lib.common.utils.JsonLib;
-import me.shib.java.lib.microrest.requests.GET;
-import me.shib.java.lib.microrest.requests.POST;
-import me.shib.java.lib.microrest.requests.Request;
+import me.shib.java.lib.restiny.requests.GET;
+import me.shib.java.lib.restiny.requests.POST;
+import me.shib.java.lib.restiny.requests.Request;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;

@@ -4,21 +4,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.shib.java.lib</groupId>
-    <artifactId>microrest</artifactId>
+    <artifactId>restiny</artifactId>
     <version>0.1.0</version>
-    <name>Micro REST</name>
-    <description>A micro REST Client library for Java</description>
-    <url>https://github.com/shibme/microrest</url>
+    <name>RESTiny</name>
+    <description>A tiny Java REST Client</description>
+    <url>https://github.com/shibme/restiny</url>
 
     <issueManagement>
-        <url>https://github.com/shibme/microrest/issues</url>
+        <url>https://github.com/shibme/restiny/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
 
     <scm>
-        <url>https://github.com/shibme/microrest</url>
-        <connection>scm:git:https://github.com/shibme/microrest.git</connection>
-        <developerConnection>scm:git:shibme@github.com:shibme/microrest.git</developerConnection>
+        <url>https://github.com/shibme/restiny</url>
+        <connection>scm:git:https://github.com/shibme/restiny.git</connection>
+        <developerConnection>scm:git:shibme@github.com:shibme/restiny.git</developerConnection>
     </scm>
 
     <developers>
