@@ -45,6 +45,15 @@ public final class RESTinyClient {
     }
 
     /**
+     * Makes an asynchronous call without any callback
+     *
+     * @param request A request object. Currently there are two types supported - GET and POST
+     */
+    public void asyncCall(Request request) {
+        asyncCall(request, null);
+    }
+
+    /**
      * A simple callback interface with methods that invoke on Response and Exception
      */
     public interface Callback {
