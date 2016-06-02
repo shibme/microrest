@@ -32,7 +32,7 @@ class HTTPRequestThread extends Thread {
         this.jsonUtil = jsonUtil;
     }
 
-    Response call() throws IOException {
+    protected Response call() throws IOException {
         switch (request.getRequestType()) {
             case GET:
                 return getRequest();
@@ -158,26 +158,8 @@ class HTTPRequestThread extends Thread {
         return new String(byteArrayOutputStream.toByteArray());
     }
 
-    private Response postMultipartRequest(POST postRequest) throws IOException {
-        String boundary = "===" + System.currentTimeMillis() + "===";
-        MultipartUtility multipart = new MultipartUtility(postRequest.getUrl(endPoint), charSet, boundary);
-        Map<String, String> stringParameters = postRequest.getStringParameters();
-        Set<String> stringParameterKeys = stringParameters.keySet();
-        Map<String, File> fileParameters = postRequest.getFileParameters();
-        Set<String> fileParameterKeys = fileParameters.keySet();
-        for (String key : stringParameterKeys) {
-            String value = stringParameters.get(key);
-            if (value != null) {
-                multipart.addFormField(key, value);
-            }
-        }
-        for (String key : fileParameterKeys) {
-            File value = fileParameters.get(key);
-            if (value != null) {
-                multipart.addFilePart(key, value);
-            }
-        }
-        Map<String, String> requestProperties = postRequest.getRequestProperties();
+
+    private void setMultipartRequestProperties(MultipartUtility multipart, Map<String, String> requestProperties) {
         Set<String> propertyKeys = requestProperties.keySet();
         for (String key : propertyKeys) {
             String value = requestProperties.get(key);
@@ -185,6 +167,34 @@ class HTTPRequestThread extends Thread {
                 multipart.setRequestProperty(key, value);
             }
         }
+    }
+
+    private void serMultipartParameters(MultipartUtility multipart, Map<String, String> parameters) {
+        Set<String> parameterKeys = parameters.keySet();
+        for (String key : parameterKeys) {
+            String value = parameters.get(key);
+            if (value != null) {
+                multipart.addFormField(key, value);
+            }
+        }
+    }
+
+    private void serMultipartFiles(MultipartUtility multipart, Map<String, File> fileParameters) throws IOException {
+        Set<String> fileParameterKeys = fileParameters.keySet();
+        for (String key : fileParameterKeys) {
+            File value = fileParameters.get(key);
+            if (value != null) {
+                multipart.addFilePart(key, value);
+            }
+        }
+    }
+
+    private Response postMultipartRequest(POST postRequest) throws IOException {
+        String boundary = "===" + System.currentTimeMillis() + "===";
+        MultipartUtility multipart = new MultipartUtility(postRequest.getUrl(endPoint), charSet, boundary);
+        serMultipartParameters(multipart, postRequest.getStringParameters());
+        serMultipartFiles(multipart, postRequest.getFileParameters());
+        setMultipartRequestProperties(multipart, postRequest.getRequestProperties());
         HttpURLConnection connection = multipart.execute();
         int code;
         try {
