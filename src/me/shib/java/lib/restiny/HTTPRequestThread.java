@@ -1,9 +1,9 @@
 package me.shib.java.lib.restiny;
 
-import me.shib.java.lib.common.utils.JsonLib;
 import me.shib.java.lib.restiny.requests.GET;
 import me.shib.java.lib.restiny.requests.POST;
 import me.shib.java.lib.restiny.requests.Request;
+import me.shib.java.lib.restiny.util.JsonUtil;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -20,16 +20,16 @@ class HTTPRequestThread extends Thread {
     private static final String userAgent = "Mozilla/5.0";
     private static final String charSet = "UTF-8";
     private static final Logger logger = Logger.getLogger(HTTPRequestThread.class.getName());
-    private JsonLib jsonLib;
+    private JsonUtil jsonUtil;
     private String endPoint;
     private Request request;
     private RESTinyClient.Callback callback;
 
-    HTTPRequestThread(String endPoint, Request request, RESTinyClient.Callback callback, JsonLib jsonLib) {
+    HTTPRequestThread(String endPoint, Request request, RESTinyClient.Callback callback, JsonUtil jsonUtil) {
         this.endPoint = endPoint;
         this.request = request;
         this.callback = callback;
-        this.jsonLib = jsonLib;
+        this.jsonUtil = jsonUtil;
     }
 
     Response call() throws IOException {
@@ -103,7 +103,7 @@ class HTTPRequestThread extends Thread {
                 conn.setRequestProperty(key, value);
             }
         }
-        Response response = new Response(jsonLib);
+        Response response = new Response(jsonUtil);
         response.setStatusCode(conn.getResponseCode());
         BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
         String output;
@@ -118,7 +118,7 @@ class HTTPRequestThread extends Thread {
     }
 
     private Response postStandardRequest(POST postRequest) throws IOException {
-        Response response = new Response(jsonLib);
+        Response response = new Response(jsonUtil);
         StringBuilder requestUrlBuilder = new StringBuilder();
         requestUrlBuilder.append(postRequest.getUrl(endPoint));
         String requestData = getRequestURLWithParameters(postRequest.getStringParameters());
@@ -132,7 +132,7 @@ class HTTPRequestThread extends Thread {
         conn.setRequestProperty("Accept", "application/json");
         conn.setDoOutput(true);
         DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
-        wr.writeBytes(jsonLib.toJson(postRequest.getPostObject()));
+        wr.writeBytes(jsonUtil.toJson(postRequest.getPostObject()));
         wr.flush();
         wr.close();
         response.setStatusCode(conn.getResponseCode());
@@ -198,7 +198,7 @@ class HTTPRequestThread extends Thread {
             }
         }
         InputStream responseStream = code >= 400 ? connection.getErrorStream() : connection.getInputStream();
-        Response response = new Response(jsonLib);
+        Response response = new Response(jsonUtil);
         response.setStatusCode(code);
         response.setResponse(readFully(responseStream));
         connection.disconnect();

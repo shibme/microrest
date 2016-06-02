@@ -1,7 +1,7 @@
 package me.shib.java.lib.restiny;
 
-import me.shib.java.lib.common.utils.JsonLib;
 import me.shib.java.lib.restiny.requests.Request;
+import me.shib.java.lib.restiny.util.JsonUtil;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import java.io.IOException;
 public final class RESTinyClient {
 
     private String endPoint;
-    private JsonLib jsonLib;
+    private JsonUtil jsonUtil;
 
     /**
      * Initializes a RESTinyClient with a given endpoint URI
@@ -20,7 +20,7 @@ public final class RESTinyClient {
      */
     public RESTinyClient(String endPoint) {
         this.endPoint = endPoint;
-        this.jsonLib = new JsonLib();
+        this.jsonUtil = new JsonUtil();
     }
 
     /**
@@ -31,7 +31,7 @@ public final class RESTinyClient {
      * @throws IOException
      */
     public Response call(Request request) throws IOException {
-        return new HTTPRequestThread(endPoint, request, null, jsonLib).call();
+        return new HTTPRequestThread(endPoint, request, null, jsonUtil).call();
     }
 
     /**
@@ -41,7 +41,7 @@ public final class RESTinyClient {
      * @param callback The callback object that needs to be used after completing the asynchronous thread
      */
     public void asyncCall(Request request, Callback callback) {
-        new HTTPRequestThread(endPoint, request, callback, jsonLib).run();
+        new HTTPRequestThread(endPoint, request, callback, jsonUtil).run();
     }
 
     /**
