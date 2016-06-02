@@ -39,10 +39,8 @@ public final class HTTPFileDownloader extends Thread {
     }
 
     private boolean prepareDownloadPath(File downloadFileDir) {
-        if (!(downloadFileDir.exists() && downloadFileDir.isDirectory())) {
-            if (!downloadFileDir.mkdirs()) {
-                logger.log(Level.WARNING, "Failed to create directory tree for: " + downloadFileDir.getAbsolutePath());
-            }
+        if (!(downloadFileDir.exists() && downloadFileDir.isDirectory()) && (!downloadFileDir.mkdirs())) {
+            logger.log(Level.WARNING, "Failed to create directory tree for: " + downloadFileDir.getAbsolutePath());
         }
         return true;
     }
@@ -54,10 +52,8 @@ public final class HTTPFileDownloader extends Thread {
         String actualFileName = new File(url.getFile()).getName();
         actualFileName = actualFileName.replaceAll("[^[^/]*]+/", "");
         if (file == null) {
-            if (downloadDirectoryPath != null) {
-                if (!prepareDownloadPath(new File(downloadDirectoryPath))) {
-                    downloadDirectoryPath = "";
-                }
+            if ((downloadDirectoryPath != null) && (!prepareDownloadPath(new File(downloadDirectoryPath)))) {
+                downloadDirectoryPath = "";
             }
             file = new File(downloadDirectoryPath + File.separator + actualFileName);
         } else {
@@ -82,10 +78,8 @@ public final class HTTPFileDownloader extends Thread {
             downloadProgress.status = DownloadStatus.COMPLETED;
             return file;
         }
-        if (file.exists()) {
-            if (file.delete()) {
-                logger.log(Level.INFO, "Deleted the incomplete file " + file.getAbsolutePath());
-            }
+        if (file.exists() && file.delete()) {
+            logger.log(Level.INFO, "Deleted the incomplete file " + file.getAbsolutePath());
         }
         return null;
     }

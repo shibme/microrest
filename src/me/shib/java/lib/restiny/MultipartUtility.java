@@ -16,7 +16,7 @@ final class MultipartUtility {
     private OutputStream outputStream;
     private PrintWriter writer;
 
-    MultipartUtility(String requestURL, String charset, String boundary) throws IOException {
+    protected MultipartUtility(String requestURL, String charset, String boundary) throws IOException {
         this.charset = charset;
         this.boundary = boundary;
 
@@ -31,11 +31,11 @@ final class MultipartUtility {
         writer = new PrintWriter(new OutputStreamWriter(outputStream, charset), true);
     }
 
-    void setRequestProperty(String key, String value) {
+    protected void setRequestProperty(String key, String value) {
         httpConn.setRequestProperty(key, value);
     }
 
-    void addFormField(String name, String value) {
+    protected void addFormField(String name, String value) {
         writer.append("--").append(boundary).append(LINE_FEED)
                 .append("Content-Disposition: form-data; name=\"")
                 .append(name).append("\"").append(LINE_FEED)
@@ -45,7 +45,7 @@ final class MultipartUtility {
         writer.flush();
     }
 
-    void addFilePart(String fieldName, File uploadFile) throws IOException {
+    protected void addFilePart(String fieldName, File uploadFile) throws IOException {
         String fileName = uploadFile.getName();
         FileInputStream inputStream = new FileInputStream(uploadFile);
         addFilePart(fieldName, inputStream, fileName);
@@ -73,7 +73,7 @@ final class MultipartUtility {
         writer.flush();
     }
 
-    HttpURLConnection execute() throws IOException {
+    protected HttpURLConnection execute() throws IOException {
         writer.append("--").append(boundary).append("--").append(LINE_FEED);
         writer.close();
         return httpConn;
