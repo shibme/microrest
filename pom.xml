@@ -5,7 +5,7 @@
 
     <groupId>me.shib.java.lib</groupId>
     <artifactId>restiny</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <name>RESTiny</name>
     <description>A tiny Java REST Client</description>
     <url>https://github.com/shibme/restiny</url>
