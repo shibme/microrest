@@ -6,12 +6,12 @@
 
 A tiny Java REST Client
 
-### Maven Dependency for Consumers
+### Maven Dependency
 Add to your `pom.xml`
 ```xml
 <dependency>
 	<groupId>me.shib.java.lib</groupId>
 	<artifactId>restiny</artifactId>
-	<version>0.1.1</version>
+	<version>0.1.3</version>
 </dependency>
 ```
