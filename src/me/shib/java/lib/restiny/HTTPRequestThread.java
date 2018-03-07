@@ -105,6 +105,7 @@ class HTTPRequestThread extends Thread {
         }
         Response response = new Response(jsonUtil);
         response.setStatusCode(conn.getResponseCode());
+        response.setHeaderFields(conn.getHeaderFields());
         BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
         String output;
         StringBuilder outputBuilder = new StringBuilder();
@@ -130,12 +131,21 @@ class HTTPRequestThread extends Thread {
         conn.setRequestMethod("POST");
         conn.setRequestProperty("User-Agent", userAgent);
         conn.setRequestProperty("Accept", "application/json");
+        Map<String, String> requestProperties = postRequest.getRequestProperties();
+        Set<String> propertyKeys = requestProperties.keySet();
+        for (String key : propertyKeys) {
+            String value = requestProperties.get(key);
+            if (value != null) {
+                conn.setRequestProperty(key, value);
+            }
+        }
         conn.setDoOutput(true);
         DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
         wr.writeBytes(jsonUtil.toJson(postRequest.getPostObject()));
         wr.flush();
         wr.close();
         response.setStatusCode(conn.getResponseCode());
+        response.setHeaderFields(conn.getHeaderFields());
         BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
         String output;
         StringBuilder outputBuilder = new StringBuilder();
@@ -210,6 +220,7 @@ class HTTPRequestThread extends Thread {
         InputStream responseStream = code >= 400 ? connection.getErrorStream() : connection.getInputStream();
         Response response = new Response(jsonUtil);
         response.setStatusCode(code);
+        response.setHeaderFields(connection.getHeaderFields());
         response.setResponse(readFully(responseStream));
         connection.disconnect();
         return response;
