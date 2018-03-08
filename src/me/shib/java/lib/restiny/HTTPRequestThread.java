@@ -179,7 +179,7 @@ class HTTPRequestThread extends Thread {
         }
     }
 
-    private void serMultipartParameters(MultipartUtility multipart, Map<String, String> parameters) {
+    private void setMultipartParameters(MultipartUtility multipart, Map<String, String> parameters) {
         Set<String> parameterKeys = parameters.keySet();
         for (String key : parameterKeys) {
             String value = parameters.get(key);
@@ -189,7 +189,7 @@ class HTTPRequestThread extends Thread {
         }
     }
 
-    private void serMultipartFiles(MultipartUtility multipart, Map<String, File> fileParameters) throws IOException {
+    private void setMultipartFiles(MultipartUtility multipart, Map<String, File> fileParameters) throws IOException {
         Set<String> fileParameterKeys = fileParameters.keySet();
         for (String key : fileParameterKeys) {
             File value = fileParameters.get(key);
@@ -202,8 +202,8 @@ class HTTPRequestThread extends Thread {
     private Response postMultipartRequest(POST postRequest) throws IOException {
         String boundary = "===" + System.currentTimeMillis() + "===";
         MultipartUtility multipart = new MultipartUtility(postRequest.getUrl(endPoint), charSet, boundary);
-        serMultipartParameters(multipart, postRequest.getStringParameters());
-        serMultipartFiles(multipart, postRequest.getFileParameters());
+        setMultipartParameters(multipart, postRequest.getStringParameters());
+        setMultipartFiles(multipart, postRequest.getFileParameters());
         setMultipartRequestProperties(multipart, postRequest.getRequestProperties());
         HttpURLConnection connection = multipart.execute();
         int code;
