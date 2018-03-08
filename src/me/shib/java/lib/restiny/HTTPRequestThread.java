@@ -202,9 +202,9 @@ class HTTPRequestThread extends Thread {
     private Response postMultipartRequest(POST postRequest) throws IOException {
         String boundary = "===" + System.currentTimeMillis() + "===";
         MultipartUtility multipart = new MultipartUtility(postRequest.getUrl(endPoint), charSet, boundary);
+        setMultipartRequestProperties(multipart, postRequest.getRequestProperties());
         setMultipartParameters(multipart, postRequest.getStringParameters());
         setMultipartFiles(multipart, postRequest.getFileParameters());
-        setMultipartRequestProperties(multipart, postRequest.getRequestProperties());
         HttpURLConnection connection = multipart.execute();
         int code;
         try {
