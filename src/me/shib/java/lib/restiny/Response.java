@@ -1,6 +1,6 @@
 package me.shib.java.lib.restiny;
 
-import me.shib.java.lib.restiny.util.JsonUtil;
+import me.shib.java.lib.utils.JsonUtil;
 
 import java.util.List;
 import java.util.Map;

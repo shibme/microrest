@@ -3,7 +3,7 @@ package me.shib.java.lib.restiny;
 import me.shib.java.lib.restiny.requests.GET;
 import me.shib.java.lib.restiny.requests.POST;
 import me.shib.java.lib.restiny.requests.Request;
-import me.shib.java.lib.restiny.util.JsonUtil;
+import me.shib.java.lib.utils.JsonUtil;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;

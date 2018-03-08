@@ -1,7 +1,7 @@
 package me.shib.java.lib.restiny;
 
 import me.shib.java.lib.restiny.requests.Request;
-import me.shib.java.lib.restiny.util.JsonUtil;
+import me.shib.java.lib.utils.JsonUtil;
 
 import javax.net.ssl.*;
 import java.io.IOException;
