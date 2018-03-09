@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
+import java.util.Set;
 
 final class MultipartUtility {
 
@@ -11,47 +13,67 @@ final class MultipartUtility {
     private static final String userAgent = "Mozilla/5.0";
 
     private final String boundary;
-    private HttpURLConnection httpConn;
+    private HttpURLConnection connection;
     private String charset;
     private OutputStream outputStream;
     private PrintWriter writer;
 
-    protected MultipartUtility(String requestURL, String charset, String boundary) throws IOException {
+    protected MultipartUtility(String requestURL, Map<String, String> requestHeaders, String charset) throws IOException {
         this.charset = charset;
-        this.boundary = boundary;
-
+        this.boundary = "*****" + Long.toString(System.currentTimeMillis()) + "*****";
         URL url = new URL(requestURL);
-        httpConn = (HttpURLConnection) url.openConnection();
-        httpConn.setDoOutput(true);
-        httpConn.setDoInput(true);
-        httpConn.setChunkedStreamingMode(0);
-        httpConn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-        httpConn.setRequestProperty("User-Agent", userAgent);
-        outputStream = httpConn.getOutputStream();
+        connection = (HttpURLConnection) url.openConnection();
+        connection.setDoInput(true);
+        connection.setDoOutput(true);
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Connection", "Keep-Alive");
+        connection.setRequestProperty("User-Agent", userAgent);
+        connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+        setRequestProperties(requestHeaders);
+        outputStream = connection.getOutputStream();
         writer = new PrintWriter(new OutputStreamWriter(outputStream, charset), true);
     }
 
-    protected void setRequestProperty(String key, String value) {
-        httpConn.setRequestProperty(key, value);
+
+    private void setRequestProperties(Map<String, String> requestProperties) {
+        Set<String> propertyKeys = requestProperties.keySet();
+        for (String key : propertyKeys) {
+            String value = requestProperties.get(key);
+            if (value != null) {
+                connection.setRequestProperty(key, value);
+            }
+        }
     }
 
-    protected void addFormField(String name, String value) {
-        writer.append("--").append(boundary).append(LINE_FEED)
-                .append("Content-Disposition: form-data; name=\"")
-                .append(name).append("\"").append(LINE_FEED)
-                .append("Content-Type: text/plain; charset=")
-                .append(charset).append(LINE_FEED)
-                .append(LINE_FEED).append(value).append(LINE_FEED);
-        writer.flush();
+    protected void setParameters(Map<String, String> parameters) {
+        Set<String> parameterKeys = parameters.keySet();
+        for (String name : parameterKeys) {
+            String value = parameters.get(name);
+            if (value != null) {
+                writer.append("--").append(boundary).append(LINE_FEED)
+                        .append("Content-Disposition: form-data; name=\"")
+                        .append(name).append("\"").append(LINE_FEED)
+                        .append("Content-Type: text/plain; charset=")
+                        .append(charset).append(LINE_FEED)
+                        .append(LINE_FEED).append(value).append(LINE_FEED);
+                writer.flush();
+            }
+        }
     }
 
-    protected void addFilePart(String fieldName, File uploadFile) throws IOException {
-        String fileName = uploadFile.getName();
-        FileInputStream inputStream = new FileInputStream(uploadFile);
-        addFilePart(fieldName, inputStream, fileName);
+    protected void setFiles(Map<String, File> fileParameters) throws IOException {
+        Set<String> fileParameterKeys = fileParameters.keySet();
+        for (String fieldName : fileParameterKeys) {
+            File file = fileParameters.get(fieldName);
+            if ((file != null) && file.exists()) {
+                String fileName = file.getName();
+                FileInputStream fileInputStream = new FileInputStream(file);
+                addFilePart(fieldName, fileInputStream, fileName);
+            }
+        }
     }
 
-    private void addFilePart(String fieldName, InputStream inputStream, String fileName) throws IOException {
+    private void addFilePart(String fieldName, FileInputStream fileInputStream, String fileName) throws IOException {
         writer.append("--").append(boundary).append(LINE_FEED)
                 .append("Content-Disposition: form-data; name=\"")
                 .append(fieldName).append("\"; filename=\"")
@@ -63,19 +85,19 @@ final class MultipartUtility {
 
         byte[] buffer = new byte[4096];
         int bytesRead;
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
+        while ((bytesRead = fileInputStream.read(buffer)) != -1) {
             outputStream.write(buffer, 0, bytesRead);
         }
         outputStream.flush();
-        inputStream.close();
+        fileInputStream.close();
 
         writer.append(LINE_FEED);
         writer.flush();
     }
 
-    protected HttpURLConnection execute() throws IOException {
+    protected HttpURLConnection close() {
         writer.append("--").append(boundary).append("--").append(LINE_FEED);
         writer.close();
-        return httpConn;
+        return connection;
     }
 }

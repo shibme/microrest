@@ -168,44 +168,11 @@ class HTTPRequestThread extends Thread {
         return new String(byteArrayOutputStream.toByteArray());
     }
 
-
-    private void setMultipartRequestProperties(MultipartUtility multipart, Map<String, String> requestProperties) {
-        Set<String> propertyKeys = requestProperties.keySet();
-        for (String key : propertyKeys) {
-            String value = requestProperties.get(key);
-            if (value != null) {
-                multipart.setRequestProperty(key, value);
-            }
-        }
-    }
-
-    private void setMultipartParameters(MultipartUtility multipart, Map<String, String> parameters) {
-        Set<String> parameterKeys = parameters.keySet();
-        for (String key : parameterKeys) {
-            String value = parameters.get(key);
-            if (value != null) {
-                multipart.addFormField(key, value);
-            }
-        }
-    }
-
-    private void setMultipartFiles(MultipartUtility multipart, Map<String, File> fileParameters) throws IOException {
-        Set<String> fileParameterKeys = fileParameters.keySet();
-        for (String key : fileParameterKeys) {
-            File value = fileParameters.get(key);
-            if (value != null) {
-                multipart.addFilePart(key, value);
-            }
-        }
-    }
-
     private Response postMultipartRequest(POST postRequest) throws IOException {
-        String boundary = "===" + System.currentTimeMillis() + "===";
-        MultipartUtility multipart = new MultipartUtility(postRequest.getUrl(endPoint), charSet, boundary);
-        setMultipartRequestProperties(multipart, postRequest.getRequestProperties());
-        setMultipartParameters(multipart, postRequest.getStringParameters());
-        setMultipartFiles(multipart, postRequest.getFileParameters());
-        HttpURLConnection connection = multipart.execute();
+        MultipartUtility multipart = new MultipartUtility(postRequest.getUrl(endPoint), postRequest.getRequestProperties(), charSet);
+        multipart.setParameters(postRequest.getStringParameters());
+        multipart.setFiles(postRequest.getFileParameters());
+        HttpURLConnection connection = multipart.close();
         int code;
         try {
             code = connection.getResponseCode();
