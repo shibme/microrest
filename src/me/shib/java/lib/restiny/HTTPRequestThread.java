@@ -2,6 +2,7 @@ package me.shib.java.lib.restiny;
 
 import me.shib.java.lib.restiny.requests.GET;
 import me.shib.java.lib.restiny.requests.POST;
+import me.shib.java.lib.restiny.requests.PUT;
 import me.shib.java.lib.restiny.requests.Request;
 import me.shib.java.lib.utils.JsonUtil;
 
@@ -38,10 +39,17 @@ class HTTPRequestThread extends Thread {
                 return getRequest();
             case POST:
                 POST postRequest = (POST) request;
-                if (null != postRequest.getPostObject()) {
-                    return postStandardRequest(postRequest);
+                if (null != postRequest.getRequestObject()) {
+                    return standardPostOrPutRequest(postRequest);
                 } else {
-                    return postMultipartRequest(postRequest);
+                    return multipartFormDataRequest(postRequest);
+                }
+            case PUT:
+                PUT putRequest = (PUT) request;
+                if (null != putRequest.getRequestObject()) {
+                    return standardPostOrPutRequest(putRequest);
+                } else {
+                    return multipartFormDataRequest(putRequest);
                 }
             default:
                 throw new IOException("Invalid/Null Request Type");
@@ -118,20 +126,20 @@ class HTTPRequestThread extends Thread {
         return response;
     }
 
-    private Response postStandardRequest(POST postRequest) throws IOException {
+    private Response standardPostOrPutRequest(POST request) throws IOException {
         Response response = new Response(jsonUtil);
         StringBuilder requestUrlBuilder = new StringBuilder();
-        requestUrlBuilder.append(postRequest.getUrl(endPoint));
-        String requestData = getRequestURLWithParameters(postRequest.getStringParameters());
+        requestUrlBuilder.append(request.getUrl(endPoint));
+        String requestData = getRequestURLWithParameters(request.getStringParameters());
         if (!requestData.isEmpty()) {
             requestUrlBuilder.append("?").append(requestData);
         }
         URL url = new URL(requestUrlBuilder.toString());
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
+        conn.setRequestMethod(request.getRequestType().toString());
         conn.setRequestProperty("User-Agent", userAgent);
         conn.setRequestProperty("Accept", "application/json");
-        Map<String, String> requestProperties = postRequest.getRequestProperties();
+        Map<String, String> requestProperties = request.getRequestProperties();
         Set<String> propertyKeys = requestProperties.keySet();
         for (String key : propertyKeys) {
             String value = requestProperties.get(key);
@@ -141,7 +149,7 @@ class HTTPRequestThread extends Thread {
         }
         conn.setDoOutput(true);
         DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
-        wr.writeBytes(jsonUtil.toJson(postRequest.getPostObject()));
+        wr.writeBytes(jsonUtil.toJson(request.getRequestObject()));
         wr.flush();
         wr.close();
         response.setStatusCode(conn.getResponseCode());
@@ -158,20 +166,10 @@ class HTTPRequestThread extends Thread {
         return response;
     }
 
-    private String readFully(InputStream in) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = in.read(buffer)) != -1) {
-            byteArrayOutputStream.write(buffer, 0, length);
-        }
-        return new String(byteArrayOutputStream.toByteArray());
-    }
-
-    private Response postMultipartRequest(POST postRequest) throws IOException {
-        MultipartUtility multipart = new MultipartUtility(postRequest.getUrl(endPoint), postRequest.getRequestProperties(), charSet);
-        multipart.setParameters(postRequest.getStringParameters());
-        multipart.setFiles(postRequest.getFileParameters());
+    private Response multipartFormDataRequest(POST request) throws IOException {
+        MultipartUtility multipart = new MultipartUtility(request.getUrl(endPoint), request.getRequestProperties(), charSet, request.getRequestType().toString());
+        multipart.setParameters(request.getStringParameters());
+        multipart.setFiles(request.getFileParameters());
         HttpURLConnection connection = multipart.close();
         int code;
         try {
@@ -180,7 +178,7 @@ class HTTPRequestThread extends Thread {
             if (e.getMessage().equals("No authentication challenges found")) {
                 code = 401;
             } else {
-                logger.throwing(this.getClass().getName(), "postMultipartRequest", e);
+                logger.throwing(this.getClass().getName(), "multipartFormDataRequest", e);
                 throw e;
             }
         }
@@ -191,6 +189,16 @@ class HTTPRequestThread extends Thread {
         response.setResponse(readFully(responseStream));
         connection.disconnect();
         return response;
+    }
+
+    private String readFully(InputStream in) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = in.read(buffer)) != -1) {
+            byteArrayOutputStream.write(buffer, 0, length);
+        }
+        return new String(byteArrayOutputStream.toByteArray());
     }
 
 }

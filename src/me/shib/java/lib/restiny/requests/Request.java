@@ -30,6 +30,10 @@ public abstract class Request {
         }
     }
 
+    protected void setRequestType(RequestType requestType) {
+        this.requestType = requestType;
+    }
+
     public String getMethodName() {
         return methodName;
     }
@@ -47,7 +51,7 @@ public abstract class Request {
     }
 
     public enum RequestType {
-        GET, POST
+        GET, POST, PUT
     }
 
 }

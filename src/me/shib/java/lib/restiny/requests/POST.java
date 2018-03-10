@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class POST extends Request {
+public class POST extends Request {
 
     private Map<String, String> stringParameters;
     private Map<String, File> fileParameters;
-    private Object postObject;
+    private Object requestObject;
 
     public POST(String methodName) {
         super(methodName, Request.RequestType.POST);
@@ -25,7 +25,7 @@ public final class POST extends Request {
     public void addParameter(String key, File file) {
         if ((key != null) && (!key.isEmpty())) {
             fileParameters.put(key, file);
-            this.postObject = null;
+            this.requestObject = null;
         }
     }
 
@@ -37,11 +37,11 @@ public final class POST extends Request {
         return fileParameters;
     }
 
-    public Object getPostObject() {
-        return postObject;
+    public Object getRequestObject() {
+        return requestObject;
     }
 
-    public void setPostObject(Object postObject) {
-        this.postObject = postObject;
+    public void setRequestObject(Object postObject) {
+        this.requestObject = postObject;
     }
 }

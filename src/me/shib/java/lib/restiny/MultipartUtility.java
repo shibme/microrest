@@ -18,14 +18,14 @@ final class MultipartUtility {
     private OutputStream outputStream;
     private PrintWriter writer;
 
-    protected MultipartUtility(String requestURL, Map<String, String> requestHeaders, String charset) throws IOException {
+    protected MultipartUtility(String requestURL, Map<String, String> requestHeaders, String charset, String requestType) throws IOException {
         this.charset = charset;
         this.boundary = "*****" + Long.toString(System.currentTimeMillis()) + "*****";
         URL url = new URL(requestURL);
         connection = (HttpURLConnection) url.openConnection();
         connection.setDoInput(true);
         connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
+        connection.setRequestMethod(requestType);
         connection.setRequestProperty("Connection", "Keep-Alive");
         connection.setRequestProperty("User-Agent", userAgent);
         connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
