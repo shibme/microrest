@@ -29,8 +29,11 @@ public final class RESTinyClient {
         this.jsonUtil = new JsonUtil();
     }
 
+    /**
+     * Ignores untrusted certificates
+     */
     public static synchronized void trustAllCerts() throws KeyManagementException, NoSuchAlgorithmException {
-        if(!trustingAllCertificates) {
+        if (!trustingAllCertificates) {
             TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
                 public X509Certificate[] getAcceptedIssuers() {
                     return null;
