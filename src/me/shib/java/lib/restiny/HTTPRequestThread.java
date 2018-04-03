@@ -135,7 +135,7 @@ class HTTPRequestThread extends Thread {
             requestUrlBuilder.append("?").append(requestData);
         }
         URL url = new URL(requestUrlBuilder.toString());
-        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(request.getRequestType().toString());
         conn.setRequestProperty("User-Agent", userAgent);
         conn.setRequestProperty("Accept", "application/json");
